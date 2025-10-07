@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExtendedDate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .result {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .result p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .true {
+            color: green;
+            font-weight: bold;
+        }
+        .false {
+            color: red;
+            font-weight: bold;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Клас ExtendedDate</h1>
+    <div id="output"></div>
+
+    <script>
+        class ExtendedDate extends Date {
+            constructor(...args) {
+                super(...args);
+            }
+
+            getDateText(language = 'uk') {
+                const months = {
+                    uk: [
+                        'січня', 'лютого', 'березня', 'квітня', 'травня', 'червня',
+                        'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'
+                    ],
+                    ru: [
+                        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+                    ],
+                    en: [
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ]
+                };
+
+                const day = this.getDate();
+                const month = months[language][this.getMonth()];
+                const year = this.getFullYear();
+
+                return `${day} ${month} ${year} року`;
+            }
+
+            isFutureOrCurrent() {
+                const now = new Date();
+                return this.getTime() >= now.getTime();
+            }
+
+            isLeapYear() {
+                const year = this.getFullYear();
+                return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+            }
+
+            getNextDate() {
+                const nextDate = new ExtendedDate(this);
+                nextDate.setDate(this.getDate() + 1);
+                return nextDate;
+            }
+        }
+
+        function displayResults() {
+            const output = document.getElementById('output');
+            let html = '';
+
+            const today = new ExtendedDate();
+            html += `
+                <div class="result">
+                    <h2>Поточна дата</h2>
+                    <p><span class="label">Стандартний формат:</span> ${today.toString()}</p>
+                    <p><span class="label">Текстовий формат (укр):</span> ${today.getDateText('uk')}</p>
+                    <p><span class="label">Текстовий формат (рус):</span> ${today.getDateText('ru')}</p>
+                    <p><span class="label">Майбутня/поточна дата?</span> <span class="${today.isFutureOrCurrent()}">${today.isFutureOrCurrent()}</span></p>
+                    <p><span class="label">Високосний рік?</span> <span class="${today.isLeapYear()}">${today.isLeapYear()}</span></p>
+                    <p><span class="label">Наступна дата:</span> ${today.getNextDate().getDateText('uk')}</p>
+                </div>
+            `;
+
+            const pastDate = new ExtendedDate(2020, 1, 15);
+            html += `
+                <div class="result">
+                    <h2>Минула дата (15 лютого 2020)</h2>
+                    <p><span class="label">Текстовий формат:</span> ${pastDate.getDateText('uk')}</p>
+                    <p><span class="label">Майбутня/поточна дата?</span> <span class="${pastDate.isFutureOrCurrent()}">${pastDate.isFutureOrCurrent()}</span></p>
+                    <p><span class="label">Високосний рік?</span> <span class="${pastDate.isLeapYear()}">${pastDate.isLeapYear()}</span></p>
+                    <p><span class="label">Наступна дата:</span> ${pastDate.getNextDate().getDateText('uk')}</p>
+                </div>
+            `;
+
+            const futureDate = new ExtendedDate(2026, 11, 31);
+            html += `
+                <div class="result">
+                    <h2>Майбутня дата (31 грудня 2026)</h2>
+                    <p><span class="label">Текстовий формат:</span> ${futureDate.getDateText('uk')}</p>
+                    <p><span class="label">Майбутня/поточна дата?</span> <span class="${futureDate.isFutureOrCurrent()}">${futureDate.isFutureOrCurrent()}</span></p>
+                    <p><span class="label">Високосний рік?</span> <span class="${futureDate.isLeapYear()}">${futureDate.isLeapYear()}</span></p>
+                    <p><span class="label">Наступна дата:</span> ${futureDate.getNextDate().getDateText('uk')}</p>
+                </div>
+            `;
+
+            const leapYear = new ExtendedDate(2024, 0, 1);
+            html += `
+                <div class="result">
+                    <h2>Високосний рік (2024)</h2>
+                    <p><span class="label">Текстовий формат:</span> ${leapYear.getDateText('uk')}</p>
+                    <p><span class="label">Високосний рік?</span> <span class="${leapYear.isLeapYear()}">${leapYear.isLeapYear()}</span></p>
+                </div>
+            `;
+
+            const endOfMonth = new ExtendedDate(2025, 9, 31);
+            html += `
+                <div class="result">
+                    <h2>Кінець місяця (31 жовтня 2025)</h2>
+                    <p><span class="label">Текстовий формат:</span> ${endOfMonth.getDateText('uk')}</p>
+                    <p><span class="label">Наступна дата:</span> ${endOfMonth.getNextDate().getDateText('uk')}</p>
+                </div>
+            `;
+
+            output.innerHTML = html;
+        }
+
+        displayResults();
+    </script>
+</body>
+</html>
